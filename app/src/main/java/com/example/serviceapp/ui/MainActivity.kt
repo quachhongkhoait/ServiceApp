@@ -4,110 +4,132 @@ import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.content.ServiceConnection
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.os.*
+import android.os.IBinder
 import android.util.Log
 import android.view.View
+import androidx.appcompat.app.AppCompatActivity
+import androidx.viewpager.widget.ViewPager
 import com.example.serviceapp.R
-import com.example.serviceapp.service.CalculatorService
-import com.example.serviceapp.service.GreeterService
-import com.example.serviceapp.service.GreeterService.Companion.MSG_SAY_HELLO
+import com.example.serviceapp.service.PlayAudioService
+import com.example.serviceapp.ui.main.dashboard.DashboardFragment
+import com.example.serviceapp.ui.main.home.HomeFragment
+import com.example.serviceapp.ui.main.notifications.NotificationsFragment
+import com.example.serviceapp.ui.main.playmusic.PlayMusicFragment
+import com.example.serviceapp.utils.OnClickListener
 import kotlinx.android.synthetic.main.activity_main.*
 
-class MainActivity : AppCompatActivity() {
-    private val tag = "nnn"
-    private var isBoundToCalculatorService = false
-    private var isBoundToGreeterService = false
-    private lateinit var calculatorService: CalculatorService
-    private var messenger: Messenger? = null
-    private val calculatorServiceConnection = object : ServiceConnection {
-        override fun onServiceConnected(name: ComponentName?, iBinder: IBinder?) {
-            logMessage("Connected to CalculatorService")
-            isBoundToCalculatorService = true
-            val binder = iBinder as CalculatorService.LocalBinder
-            calculatorService = binder.getService()
+class MainActivity : AppCompatActivity(), OnClickListener {
+    val TAG = "main"
+    private lateinit var mPlayAudioService: PlayAudioService
+
+    private val playmusicServiceConnection = object : ServiceConnection {
+        override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
+            Log.d(TAG, "onServiceConnected: MainActivity")
+            val binder = service as PlayAudioService.LocalBinder
+            mPlayAudioService = binder.getService()
         }
 
         override fun onServiceDisconnected(name: ComponentName?) {
-            logMessage("Disconnected from CalculatorService")
-            isBoundToCalculatorService = false
-        }
-    }
-
-    private val greeterServiceConnection = object : ServiceConnection {
-        override fun onServiceConnected(name: ComponentName?, iBinder: IBinder?) {
-            logMessage("Connected to GreeterService")
-            messenger = Messenger(iBinder)
-            isBoundToGreeterService = true
+            Log.d(TAG, "onServiceDisconnected: MainActivity")
         }
 
-        override fun onServiceDisconnected(name: ComponentName?) {
-            logMessage("Disconnected from GreeterService")
-            messenger = null
-            isBoundToGreeterService = false
-        }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        initViewPager()
+        initBottomNav()
+        initFragment()
+        bindService()
+        onClick()
+    }
 
-        sayHelloButton.setOnClickListener {
-            if (isBoundToGreeterService) {
-                val message: Message = Message.obtain(null, MSG_SAY_HELLO, 0, 0)
-                try {
-                    messenger?.send(message)
-                } catch (e: RemoteException) {
-                    e.printStackTrace()
+    private fun initFragment() {
+        supportFragmentManager.beginTransaction()
+            .add(R.id.mFCWPlay, PlayMusicFragment())
+            .commit()
+    }
+
+    private fun onClick() {
+        mIVPlay.setOnClickListener {
+            mPlayAudioService.playAudio()
+        }
+    }
+
+    private fun fragmentPlay(b: Boolean) {
+        mFCWPlay.visibility = if (b) View.VISIBLE else View.GONE
+        mRltMain.visibility = if (b) View.GONE else View.VISIBLE
+    }
+
+    private fun initViewPager() {
+        val mAdapterPager = AdapterPager(supportFragmentManager)
+        mAdapterPager.addData(HomeFragment(), "Home")
+        mAdapterPager.addData(DashboardFragment(), "Chat")
+        mAdapterPager.addData(NotificationsFragment(), "Profile")
+        mViewPager.adapter = mAdapterPager
+        mViewPager.offscreenPageLimit = 3
+        mViewPager.addOnPageChangeListener(object : ViewPager.OnPageChangeListener {
+            override fun onPageScrolled(
+                position: Int,
+                positionOffset: Float,
+                positionOffsetPixels: Int
+            ) {
+            }
+
+            override fun onPageSelected(position: Int) {
+                mBottomNav.menu.getItem(position).isChecked = true
+            }
+
+            override fun onPageScrollStateChanged(state: Int) {
+            }
+        })
+    }
+
+    private fun initBottomNav() {
+        mBottomNav.setOnNavigationItemSelectedListener {
+            when (it.itemId) {
+                R.id.navigation_home -> {
+                    mViewPager.currentItem = 0
+                    true
                 }
-            } else {
-                logMessage("Not bound to GreeterService. This should not happen!")
+                R.id.navigation_dashboard -> {
+                    mViewPager.currentItem = 1
+                    true
+                }
+                R.id.navigation_notifications -> {
+                    mViewPager.currentItem = 2
+                    true
+                }
+                else -> false
             }
         }
-        mBtnGreeter.setOnClickListener {
-            startActivity(Intent(this@MainActivity, MainActivity2::class.java))
+    }
+
+
+    private fun bindService() {
+        Intent(this, PlayAudioService::class.java).also { intent ->
+            bindService(intent, playmusicServiceConnection, Context.BIND_AUTO_CREATE)
         }
     }
 
-    override fun onStart() {
-        super.onStart()
-        Intent(this, CalculatorService::class.java).also { intent ->
-            bindService(intent, calculatorServiceConnection, Context.BIND_AUTO_CREATE)
-        }
-        Intent(this, GreeterService::class.java).also { intent ->
-            bindService(intent, greeterServiceConnection, Context.BIND_AUTO_CREATE)
+    private fun unbindService() {
+        Intent(this, PlayAudioService::class.java).also { intent ->
+            unbindService(playmusicServiceConnection)
         }
     }
 
-    override fun onStop() {
-        super.onStop()
-        if (isBoundToCalculatorService) {
-            unbindService(calculatorServiceConnection)
-        }
-        if (isBoundToGreeterService) {
-            unbindService(greeterServiceConnection)
-        }
+    override fun onDestroy() {
+        super.onDestroy()
+        unbindService()
     }
 
-    fun onClick(view: View) {
-        val operand1 = operandOneEditText.text.toString().toInt()
-        val operand2 = operandTwoEditText.text.toString().toInt()
-
-        if (isBoundToCalculatorService) {
-            resultTextView.text = when (view?.id) {
-                R.id.addButton -> calculatorService.add(operand1, operand2).toString()
-                R.id.subtractButton -> calculatorService.subtract(operand1, operand2).toString()
-                R.id.multiplyButton -> calculatorService.multiply(operand1, operand2).toString()
-                R.id.divideButton -> calculatorService.divide(operand1, operand2).toString()
-                else -> "Unknown value"
-            }
-        } else {
-            logMessage("Not bound to CalculatorService. This should not happen!")
-        }
+    override fun onClick(check: Boolean) {
+        fragmentPlay(check)
     }
 
-    fun logMessage(message: String) {
-        Log.d(tag, message)
+    fun openPlay(view: View) {
+        fragmentPlay(true)
     }
 }
