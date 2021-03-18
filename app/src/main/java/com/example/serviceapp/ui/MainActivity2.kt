@@ -12,46 +12,49 @@ import android.os.Messenger
 import android.util.Log
 import com.example.serviceapp.R
 import com.example.serviceapp.service.GreeterService
+import com.example.serviceapp.service.PlayAudioService
 import kotlinx.android.synthetic.main.activity_main2.*
 import java.lang.Exception
 
 class MainActivity2 : AppCompatActivity() {
+    val TAG = "svv"
+    private lateinit var mPlayAudioService: PlayAudioService
 
-    private var messenger: Messenger? = null
-    private val greeterServiceConnection = object : ServiceConnection {
-        override fun onServiceConnected(name: ComponentName?, iBinder: IBinder?) {
-            Log.d("nnn", "Connected to MainActivity2")
-            try {
-                messenger = Messenger(iBinder)
-            }catch (ex : Exception){
-                Log.d("nnn", "onServiceConnected: ${ex.message}")
-            }
+    private val playmusicServiceConnection = object : ServiceConnection {
+        override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
+            Log.d(TAG, "onServiceConnected: MainActivity2")
+            val binder = service as PlayAudioService.LocalBinder
+            mPlayAudioService = binder.getService()
         }
 
         override fun onServiceDisconnected(name: ComponentName?) {
-            Log.d("nnn", "Disconnected from MainActivity2")
-            messenger = null
+            Log.d(TAG, "onServiceDisconnected: MainActivity2")
         }
+
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main2)
         mBtnClick.setOnClickListener {
-            val message: Message = Message.obtain(null, GreeterService.MSG_SAY_HELLO, 0, 0)
-            messenger?.send(message)
+            Intent(this, PlayAudioService::class.java).also { intent ->
+                bindService(intent, playmusicServiceConnection, Context.BIND_INCLUDE_CAPABILITIES)
+            }
+        }
+        mBtnPlay.setOnClickListener {
+            Intent(this, PlayAudioService::class.java).also { intent ->
+                bindService(intent, playmusicServiceConnection, Context.BIND_AUTO_CREATE)
+            }
         }
     }
 
     override fun onStart() {
         super.onStart()
-        Intent(this, GreeterService::class.java).also { intent ->
-            bindService(intent, greeterServiceConnection, Context.BIND_AUTO_CREATE)
-        }
+
     }
 
     override fun onStop() {
         super.onStop()
-        unbindService(greeterServiceConnection)
+//        unbindService(playmusicServiceConnection)
     }
 }

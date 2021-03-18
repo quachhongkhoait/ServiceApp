@@ -1,9 +1,6 @@
 package com.example.serviceapp.service
 
-import android.app.PendingIntent
 import android.app.Service
-import android.content.ComponentName
-import android.content.Context
 import android.content.Intent
 import android.media.AudioManager
 import android.media.MediaPlayer
@@ -23,21 +20,27 @@ class PlayAudioService : Service() {
         fun getService(): PlayAudioService = this@PlayAudioService
     }
 
-    override fun onBind(intent: Intent): IBinder {
+    override fun onCreate() {
+        super.onCreate()
         initMediaPlayer()
+        Log.d(TAG, "onCreate: ")
+    }
+
+    override fun onBind(intent: Intent): IBinder {
         return mBinder
     }
 
-    private fun initMediaPlayer() {
-        mediaPlayer = MediaPlayer.create(getApplicationContext(), R.raw.sncp);
+    fun playAudio() {
+        if (mediaPlayer.isPlaying) {
+            mediaPlayer.stop()
+        }
+        mediaPlayer = MediaPlayer.create(applicationContext, R.raw.sncp)
         mediaPlayer.start()
-        Log.d(TAG, "initMediaPlayer: ")
+    }
+
+    private fun initMediaPlayer() {
+        mediaPlayer = MediaPlayer()
+        mediaPlayer.setWakeMode(applicationContext, PowerManager.PARTIAL_WAKE_LOCK)
+        mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC)
     }
 }
-
-
-//class lcBind : Binder() {
-//    internal// Return this instance of LocalService so clients can call public methods
-//    val service: PlayAudioService
-//        get() = this@PlayAudioService
-//}

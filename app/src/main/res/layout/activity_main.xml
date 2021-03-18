@@ -1,129 +1,103 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/container"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".ui.MainActivity">
+    android:layout_height="match_parent">
 
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/verticalGuideline"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        app:layout_constraintGuide_percent="0.5" />
-
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/horizontalGuideline"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.5" />
-
-    <Button
-        android:id="@+id/addButton"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_margin="8dp"
-        android:onClick="onClick"
-        android:text="Add"
-        app:layout_constraintEnd_toStartOf="@+id/verticalGuideline"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/horizontalGuideline" />
-
-    <Button
-        android:id="@+id/subtractButton"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_margin="8dp"
-        android:onClick="onClick"
-        android:text="Subtract"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/verticalGuideline"
-        app:layout_constraintTop_toTopOf="@+id/horizontalGuideline" />
-
-    <Button
-        android:id="@+id/multiplyButton"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_margin="8dp"
-        android:onClick="onClick"
-        android:text="Multiply"
-        app:layout_constraintEnd_toStartOf="@+id/verticalGuideline"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/addButton" />
-
-    <Button
-        android:id="@+id/divideButton"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_margin="8dp"
-        android:onClick="onClick"
-        android:text="Divide"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/verticalGuideline"
-        app:layout_constraintTop_toBottomOf="@+id/subtractButton" />
-
-    <EditText
-        android:id="@+id/operandOneEditText"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_margin="8dp"
-        android:hint="Operand 1"
-        android:inputType="number"
-        app:layout_constraintBottom_toTopOf="@+id/operandTwoEditText"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        tools:text="Operand 1" />
-
-    <EditText
-        android:id="@+id/operandTwoEditText"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_margin="8dp"
-        android:hint="Operand 2"
-        android:inputType="number"
-        app:layout_constraintBottom_toTopOf="@+id/resultTextView"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        tools:text="Operand 2" />
-
-    <TextView
-        android:id="@+id/resultTextView"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_margin="8dp"
-        android:text="Result"
-        android:textSize="18sp"
-        app:layout_constraintBottom_toTopOf="@+id/horizontalGuideline"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        tools:text="Result" />
-
-    <Button
-        android:id="@+id/sayHelloButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="32dp"
-        android:text="Say Hello!"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/divideButton" />
-
-    <Button
-        android:text="Calculator"
-        android:id="@+id/mBtnCalculator"
+    <RelativeLayout
+        android:id="@+id/mRltMain"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:layout_height="match_parent">
 
-    <Button
-        android:text="Message"
-        android:id="@+id/mBtnGreeter"
+        <com.google.android.material.bottomnavigation.BottomNavigationView
+            android:id="@+id/mBottomNav"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            app:menu="@menu/bottom_nav_menu" />
+
+        <androidx.viewpager.widget.ViewPager
+            android:id="@+id/mViewPager"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_above="@id/mBottomNav" />
+
+
+        <RelativeLayout
+            android:id="@+id/mRltPlay"
+            android:layout_width="match_parent"
+            android:layout_height="?actionBarSize"
+            android:layout_above="@+id/mBottomNav">
+
+            <de.hdodenhof.circleimageview.CircleImageView
+                android:onClick="openPlay"
+                android:id="@+id/mCIVPicture"
+                android:layout_width="60dp"
+                android:layout_height="match_parent"
+                android:layout_alignParentLeft="true"
+                android:src="@drawable/sncp" />
+
+            <LinearLayout
+                android:onClick="openPlay"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginLeft="5dp"
+                android:layout_toLeftOf="@id/mIVPrevous"
+                android:layout_toRightOf="@id/mCIVPicture"
+                android:gravity="center_vertical"
+                android:orientation="vertical">
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:clickable="false"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Siêu Nhân Cuồng Phong"
+                    android:textStyle="bold" />
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:clickable="false"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Takeshi" />
+            </LinearLayout>
+
+            <ImageView
+                android:id="@+id/mIVNext"
+                android:layout_width="50dp"
+                android:layout_height="match_parent"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
+                android:contentDescription="next"
+                android:padding="5dp"
+                android:src="@drawable/ic_next" />
+
+            <ImageView
+                android:id="@+id/mIVPlay"
+                android:layout_width="50dp"
+                android:layout_height="match_parent"
+                android:layout_toStartOf="@+id/mIVNext"
+                android:layout_toLeftOf="@+id/mIVNext"
+                android:contentDescription="play"
+                android:padding="5dp"
+                android:src="@drawable/ic_play" />
+
+            <ImageView
+                android:id="@+id/mIVPrevous"
+                android:layout_width="50dp"
+                android:layout_height="match_parent"
+                android:layout_toStartOf="@id/mIVPlay"
+                android:layout_toLeftOf="@id/mIVPlay"
+                android:contentDescription="previous"
+                android:padding="5dp"
+                android:src="@drawable/ic_previous" />
+        </RelativeLayout>
+    </RelativeLayout>
+
+    <androidx.fragment.app.FragmentContainerView
+        android:id="@+id/mFCWPlay"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@+id/mBtnCalculator" />
-
-</androidx.constraintlayout.widget.ConstraintLayout>
+        android:layout_height="match_parent"
+        android:layout_alignParentTop="true"
+        android:visibility="gone" />
+</RelativeLayout>
