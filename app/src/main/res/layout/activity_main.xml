@@ -31,34 +31,34 @@
             android:layout_above="@+id/mBottomNav">
 
             <de.hdodenhof.circleimageview.CircleImageView
-                android:onClick="openPlay"
                 android:id="@+id/mCIVPicture"
                 android:layout_width="60dp"
                 android:layout_height="match_parent"
                 android:layout_alignParentLeft="true"
+                android:onClick="openPlay"
                 android:src="@drawable/sncp" />
 
             <LinearLayout
-                android:onClick="openPlay"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_marginLeft="5dp"
                 android:layout_toLeftOf="@id/mIVPrevous"
                 android:layout_toRightOf="@id/mCIVPicture"
                 android:gravity="center_vertical"
+                android:onClick="openPlay"
                 android:orientation="vertical">
 
                 <androidx.appcompat.widget.AppCompatTextView
-                    android:clickable="false"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:clickable="false"
                     android:text="Siêu Nhân Cuồng Phong"
                     android:textStyle="bold" />
 
                 <androidx.appcompat.widget.AppCompatTextView
-                    android:clickable="false"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:clickable="false"
                     android:text="Takeshi" />
             </LinearLayout>
 
@@ -68,6 +68,7 @@
                 android:layout_height="match_parent"
                 android:layout_alignParentEnd="true"
                 android:layout_alignParentRight="true"
+                android:background="?android:attr/selectableItemBackground"
                 android:contentDescription="next"
                 android:padding="5dp"
                 android:src="@drawable/ic_next" />
@@ -78,6 +79,7 @@
                 android:layout_height="match_parent"
                 android:layout_toStartOf="@+id/mIVNext"
                 android:layout_toLeftOf="@+id/mIVNext"
+                android:background="?android:attr/selectableItemBackground"
                 android:contentDescription="play"
                 android:padding="5dp"
                 android:src="@drawable/ic_play" />
@@ -88,6 +90,7 @@
                 android:layout_height="match_parent"
                 android:layout_toStartOf="@id/mIVPlay"
                 android:layout_toLeftOf="@id/mIVPlay"
+                android:background="?android:attr/selectableItemBackground"
                 android:contentDescription="previous"
                 android:padding="5dp"
                 android:src="@drawable/ic_previous" />

@@ -4,6 +4,7 @@ import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.content.ServiceConnection
+import android.content.res.TypedArray
 import android.os.Bundle
 import android.os.IBinder
 import android.util.Log
@@ -19,8 +20,11 @@ import com.example.serviceapp.ui.main.playmusic.PlayMusicFragment
 import com.example.serviceapp.utils.OnClickListener
 import kotlinx.android.synthetic.main.activity_main.*
 
+
 class MainActivity : AppCompatActivity(), OnClickListener {
     val TAG = "main"
+
+
     private lateinit var mPlayAudioService: PlayAudioService
 
     private val playmusicServiceConnection = object : ServiceConnection {
@@ -28,12 +32,20 @@ class MainActivity : AppCompatActivity(), OnClickListener {
             Log.d(TAG, "onServiceConnected: MainActivity")
             val binder = service as PlayAudioService.LocalBinder
             mPlayAudioService = binder.getService()
+
+            onHover()
         }
 
         override fun onServiceDisconnected(name: ComponentName?) {
             Log.d(TAG, "onServiceDisconnected: MainActivity")
         }
 
+    }
+
+    private fun onHover(): Int {
+        val attrs = intArrayOf(R.attr.selectableItemBackground)
+        val typedArray: TypedArray = obtainStyledAttributes(attrs)
+        return typedArray.getResourceId(0, 0)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -53,8 +65,18 @@ class MainActivity : AppCompatActivity(), OnClickListener {
     }
 
     private fun onClick() {
+        mIVPlay.setBackgroundResource(onHover())
+        mIVNext.setBackgroundResource(onHover())
+        mIVPrevous.setBackgroundResource(onHover())
+
         mIVPlay.setOnClickListener {
-            mPlayAudioService.playAudio()
+            mPlayAudioService.playMusic(0)
+        }
+        mIVNext.setOnClickListener {
+            mPlayAudioService.nextMusic(1)
+        }
+        mIVPrevous.setOnClickListener {
+            mPlayAudioService.previousMusic(0)
         }
     }
 
@@ -66,8 +88,8 @@ class MainActivity : AppCompatActivity(), OnClickListener {
     private fun initViewPager() {
         val mAdapterPager = AdapterPager(supportFragmentManager)
         mAdapterPager.addData(HomeFragment(), "Home")
-        mAdapterPager.addData(DashboardFragment(), "Chat")
-        mAdapterPager.addData(NotificationsFragment(), "Profile")
+        mAdapterPager.addData(DashboardFragment(), "Dashboard")
+        mAdapterPager.addData(NotificationsFragment(), "Notifications")
         mViewPager.adapter = mAdapterPager
         mViewPager.offscreenPageLimit = 3
         mViewPager.addOnPageChangeListener(object : ViewPager.OnPageChangeListener {
